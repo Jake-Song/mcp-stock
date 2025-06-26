@@ -11,6 +11,25 @@ mcp = FastMCP("stock")
 API_KEY = os.getenv('ALPHA_VANTAGE_API_KEY')
 
 @mcp.tool()
+async def get_stock_news(symbol: str) -> Dict[str, Any] | str:
+    """Get stock news for a symbol.
+
+    Args:
+        symbol: Symbol of the stock
+    """
+    # Constants
+    API_BASE = "https://www.alphavantage.co/query?function=NEWS_SENTIMENT&tickers=" + symbol + "&apikey=" + API_KEY
+    
+    try:
+        response = requests.get(API_BASE)
+        stock_news = response.json()
+        if not stock_news:
+            return "Unable to fetch stock news for this symbol. Please check the symbol and try again."
+        return stock_news
+    except Exception as e:
+        return f"Error fetching stock news: {e}"
+
+@mcp.tool()
 async def get_stock(symbol: str, interval: str = "5min") -> Dict[str, Any] | str:
     """Get stock data for a symbol.
 
